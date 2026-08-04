@@ -1,0 +1,30 @@
+#!/bin/sh
+set -eu
+
+if [ ! -r "${HOME}/.shellenv" ]; then
+  printf '%s\n' 'mcp-gateway: ~/.shellenv is required for Argo CD credentials' >&2
+  exit 1
+fi
+
+# shellcheck source=/dev/null
+. "${HOME}/.shellenv"
+
+case "${1:-}" in
+  staging)
+    : "${ARGOCD_STAGING_TOKEN:?ARGOCD_STAGING_TOKEN is not set}"
+    ARGOCD_BASE_URL='https://argocd-staging.angler-elver.ts.net'
+    ARGOCD_API_TOKEN="${ARGOCD_STAGING_TOKEN}"
+    ;;
+  prod)
+    : "${ARGOCD_PROD_TOKEN:?ARGOCD_PROD_TOKEN is not set}"
+    ARGOCD_BASE_URL='https://argocd-prod.angler-elver.ts.net'
+    ARGOCD_API_TOKEN="${ARGOCD_PROD_TOKEN}"
+    ;;
+  *)
+    printf '%s\n' 'usage: argocd staging|prod' >&2
+    exit 2
+    ;;
+esac
+
+export ARGOCD_BASE_URL ARGOCD_API_TOKEN
+exec npx -y 'argocd-mcp@0.8.0' stdio

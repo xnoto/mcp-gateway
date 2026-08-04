@@ -1,0 +1,16 @@
+#!/bin/sh
+set -eu
+
+if [ ! -r "${HOME}/.shellenv" ]; then
+  printf '%s\n' 'mcp-gateway: ~/.shellenv is required for Grafana credentials' >&2
+  exit 1
+fi
+
+# shellcheck source=/dev/null
+. "${HOME}/.shellenv"
+
+: "${GRAFANA_TOKEN:?GRAFANA_TOKEN is not set}"
+export GRAFANA_URL='https://hatchengineering.grafana.net'
+export GRAFANA_SERVICE_ACCOUNT_TOKEN="${GRAFANA_TOKEN}"
+
+exec uvx 'mcp-grafana@1.0.0'

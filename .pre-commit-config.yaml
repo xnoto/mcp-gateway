@@ -1,0 +1,36 @@
+repos:
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: 3e8a8703264a2f4a69428a0aa4dcb512790b2c8c  # pragma: allowlist secret; v6.0.0
+    hooks:
+      - id: end-of-file-fixer
+      - id: trailing-whitespace
+      - id: check-merge-conflict
+      - id: check-json
+      - id: check-yaml
+      - id: detect-private-key
+
+  - repo: https://github.com/Yelp/detect-secrets
+    rev: 01886c8a910c64595c47f186ca1ffc0b77fa5458  # pragma: allowlist secret; v1.5.0
+    hooks:
+      - id: detect-secrets
+
+  - repo: https://github.com/shellcheck-py/shellcheck-py
+    rev: 745eface02aef23e168a8afb6b5737818efbea95  # pragma: allowlist secret; v0.11.0.1
+    hooks:
+      - id: shellcheck
+        files: ^(run|healthcheck|bin/(argocd|grafana))$
+        types: [file]
+
+  - repo: local
+    hooks:
+      - id: node-check
+        name: node syntax check
+        entry: node --check
+        language: system
+        files: \.mjs$
+
+  - repo: https://github.com/commitizen-tools/commitizen
+    rev: 6afcd8e9560ddf1b9a5032262a0be26540e85fb3  # pragma: allowlist secret; v4.16.5
+    hooks:
+      - id: commitizen
+        stages: [commit-msg]

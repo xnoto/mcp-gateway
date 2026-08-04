@@ -1,0 +1,17 @@
+#!/bin/sh
+set -eu
+
+PATH="${HOME}/.local/bin:${HOME}/.bun/bin:${HOME}/go/bin:/opt/homebrew/bin:/usr/local/bin:/home/linuxbrew/.linuxbrew/bin:/usr/bin:/bin"
+export PATH
+
+if ! command -v uvx >/dev/null 2>&1; then
+  printf '%s\n' 'mcp-gateway: uvx is required' >&2
+  exit 127
+fi
+
+if ! command -v npx >/dev/null 2>&1; then
+  printf '%s\n' 'mcp-gateway: npx is required' >&2
+  exit 127
+fi
+
+exec node "${HOME}/.config/mcp-gateway/supervisor.mjs"

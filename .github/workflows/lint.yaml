@@ -1,0 +1,31 @@
+name: Lint
+
+on:
+  pull_request:
+    branches: [main]
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+env:
+  PRE_COMMIT_VERSION: 4.6.0
+
+jobs:
+  pre-commit:
+    strategy:
+      fail-fast: false
+      matrix:
+        runner: [ubuntu-24.04, macos-15]
+    runs-on: ${{ matrix.runner }}
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          persist-credentials: false
+
+      - name: Install pinned validation tools
+        run: python3 -m pip install "pre-commit==${PRE_COMMIT_VERSION}"
+
+      - name: Run pre-commit hooks
+        run: pre-commit run --all-files

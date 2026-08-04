@@ -1,0 +1,110 @@
+{
+  "mcpServers": {
+    "aws-staging": {
+      "port": 8765,
+      "command": "uvx",
+      "args": [
+        "mcp-proxy-for-aws@1.6.4",
+        "https://aws-mcp.us-east-1.api.aws/mcp",
+        "--profile",
+        "staging",
+        "--read-only",
+        "--metadata",
+        "AWS_REGION=us-east-2"
+      ]
+    },
+    "aws-prod": {
+      "port": 8766,
+      "command": "uvx",
+      "args": [
+        "mcp-proxy-for-aws@1.6.4",
+        "https://aws-mcp.us-east-1.api.aws/mcp",
+        "--profile",
+        "prod",
+        "--read-only",
+        "--metadata",
+        "AWS_REGION=us-east-2"
+      ]
+    },
+    "aws-docs": {
+      "port": 8767,
+      "command": "uvx",
+      "args": [
+        "awslabs.aws-documentation-mcp-server@1.1.28"
+      ],
+      "env": {
+        "FASTMCP_LOG_LEVEL": "ERROR",
+        "AWS_DOCUMENTATION_PARTITION": "aws"
+      }
+    },
+    "grafana": {
+      "port": 8768,
+      "command": "/bin/sh",
+      "args": [
+        "-c",
+        "exec \"$HOME/.config/mcp-gateway/bin/grafana\""
+      ]
+    },
+    "agent-hub": {
+      "port": 8776,
+      "command": "npx",
+      "args": [
+        "-y",
+        "agent-hub-mcp@0.4.0"
+      ]
+    },
+    "tmux": {
+      "port": 8770,
+      "command": "npx",
+      "args": [
+        "-y",
+        "tmux-mcp@0.2.2"
+      ]
+    },
+    "terraform-docs": {
+      "port": 8771,
+      "command": "podman",
+      "args": [
+        "run",
+        "--rm",
+        "-i",
+        "docker.io/hashicorp/terraform-mcp-server:1.1.0"
+      ]
+    },
+    "kubernetes": {
+      "port": 8772,
+      "command": "npx",
+      "args": [
+        "-y",
+        "mcp-server-kubernetes@4.1.2"
+      ],
+      "env": {
+        "K8S_CONTEXT": "staging-eks.angler-elver.ts.net"
+      }
+    },
+    "opencode-docs": {
+      "port": 8773,
+      "command": "npx",
+      "args": [
+        "-y",
+        "opencode-docs-mcp@1.0.0"
+      ]
+    },
+    "argocd-staging-eks": {
+      "port": 8774,
+      "command": "/bin/sh",
+      "args": [
+        "-c",
+        "exec \"$HOME/.config/mcp-gateway/bin/argocd\" staging"
+      ]
+    },
+    "argocd-prod-eks": {
+      "port": 8775,
+      "command": "/bin/sh",
+      "args": [
+        "-c",
+        "exec \"$HOME/.config/mcp-gateway/bin/argocd\" prod"
+      ]
+    }
+  }
+}
