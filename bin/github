@@ -1,0 +1,16 @@
+#!/bin/sh
+set -eu
+
+if [ ! -r "${HOME}/.shellenv" ]; then
+  printf '%s\n' 'mcp-gateway: ~/.shellenv is required for GitHub credentials' >&2
+  exit 1
+fi
+
+# shellcheck source=/dev/null
+. "${HOME}/.shellenv"
+
+: "${GITHUB_TOKEN:?GITHUB_TOKEN is not set}"
+GITHUB_PERSONAL_ACCESS_TOKEN="${GITHUB_TOKEN}"
+export GITHUB_PERSONAL_ACCESS_TOKEN
+
+exec podman run --rm -i --env GITHUB_PERSONAL_ACCESS_TOKEN 'ghcr.io/github/github-mcp-server:v1.9.0'

@@ -45,6 +45,14 @@
         "exec \"$HOME/.config/mcp-gateway/bin/grafana\""
       ]
     },
+    "github": {
+      "port": 8778,
+      "command": "/bin/sh",
+      "args": [
+        "-c",
+        "exec \"$HOME/.config/mcp-gateway/bin/github\""
+      ]
+    },
     "agent-hub": {
       "port": 8776,
       "command": "npx",
@@ -88,6 +96,14 @@
       "args": [
         "-y",
         "opencode-docs-mcp@1.0.0"
+      ]
+    },
+    "context7": {
+      "port": 8781,
+      "command": "npx",
+      "args": [
+        "-y",
+        "@upstash/context7-mcp@4.0.2"
       ]
     },
     "argocd-staging-eks": {
