@@ -38,6 +38,12 @@ launchctl bootstrap "gui/$(id -u)" \
   "$HOME/Library/LaunchAgents/com.xnoto.mcp-gateway.plist"
 ```
 
+To restart the service without re-bootstrapping:
+
+```sh
+launchctl kickstart -k "gui/$(id -u)/com.xnoto.mcp-gateway"
+```
+
 ### Fedora Linux
 
 ```sh
