@@ -30,7 +30,7 @@
       "port": 8767,
       "command": "uvx",
       "args": [
-        "awslabs.aws-documentation-mcp-server@1.1.28"
+        "awslabs.aws-documentation-mcp-server@1.1.30"
       ],
       "env": {
         "FASTMCP_LOG_LEVEL": "ERROR",
@@ -68,7 +68,7 @@
         "run",
         "--rm",
         "-i",
-        "docker.io/hashicorp/terraform-mcp-server:1.1.0"
+        "docker.io/hashicorp/terraform-mcp-server:1.2.0"
       ]
     },
     "kubernetes": {
@@ -76,7 +76,7 @@
       "command": "npx",
       "args": [
         "-y",
-        "mcp-server-kubernetes@4.1.2"
+        "mcp-server-kubernetes@4.1.4"
       ],
       "env": {
         "K8S_CONTEXT": "staging-eks.angler-elver.ts.net"
