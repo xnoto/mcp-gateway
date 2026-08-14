@@ -20,8 +20,13 @@ case "${1:-}" in
     ARGOCD_BASE_URL='https://argocd-prod.angler-elver.ts.net'
     ARGOCD_API_TOKEN="${ARGOCD_PROD_TOKEN}"
     ;;
+  makeitwork)
+    : "${ARGOCD_MAKEITWORK_TOKEN:?ARGOCD_MAKEITWORK_TOKEN is not set}"
+    ARGOCD_BASE_URL='https://argocd.makeitwork.cloud'
+    ARGOCD_API_TOKEN="${ARGOCD_MAKEITWORK_TOKEN}"
+    ;;
   *)
-    printf '%s\n' 'usage: argocd staging|prod' >&2
+    printf '%s\n' 'usage: argocd staging|prod|makeitwork' >&2
     exit 2
     ;;
 esac

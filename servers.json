@@ -105,6 +105,14 @@
         "-c",
         "exec \"$HOME/.config/mcp-gateway/bin/argocd\" prod"
       ]
+    },
+    "argocd-makeitwork": {
+      "port": 8777,
+      "command": "/bin/sh",
+      "args": [
+        "-c",
+        "exec \"$HOME/.config/mcp-gateway/bin/argocd\" makeitwork"
+      ]
     }
   }
 }
