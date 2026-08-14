@@ -13,4 +13,4 @@ fi
 export GRAFANA_URL='https://hatchengineering.grafana.net'
 export GRAFANA_SERVICE_ACCOUNT_TOKEN="${GRAFANA_TOKEN}"
 
-exec uvx 'mcp-grafana@1.0.0'
+exec uvx 'mcp-grafana@1.1.0'

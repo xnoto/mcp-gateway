@@ -27,6 +27,11 @@ Run `make` or `make check` before considering a change complete. These commands
 run repository hygiene checks, secret detection, ShellCheck, JSON validation,
 and `node --check` for the JavaScript modules.
 
+Refresh hooks with `pre-commit autoupdate --freeze`; this repository keeps hook
+revisions as immutable commit SHAs. Keep the adjacent release comments and the
+`pragma: allowlist secret` markers on those public SHAs so an all-files secret
+scan does not mistake dependency pins for credentials.
+
 Runtime health checks require the installed checkout, credentials, packages,
 VPN access, and platform service, so do not start or restart services without
 explicit confirmation.

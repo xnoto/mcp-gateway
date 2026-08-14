@@ -27,4 +27,4 @@ case "${1:-}" in
 esac
 
 export ARGOCD_BASE_URL ARGOCD_API_TOKEN
-exec npx -y 'argocd-mcp@0.8.0' stdio
+exec npx -y 'argocd-mcp@0.9.0' stdio
