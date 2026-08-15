@@ -17,7 +17,8 @@ Keep platform service definitions and secret rendering in `dotfiles`:
 - `servers.json` defines the supervised MCP servers and localhost ports.
 - `supervisor.mjs`, `healthcheck.mjs`, and `probe.mjs` implement supervision
   and MCP protocol checks.
-- `run`, `healthcheck`, `bin/argocd`, and `bin/grafana` must remain executable.
+- `run`, `healthcheck`, `bin/argocd`, `bin/github`, `bin/grafana`, and
+  `bin/parallel-search` must remain executable.
 - The shell wrappers are POSIX `sh` and must remain portable across macOS and
   Linux.
 

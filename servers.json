@@ -106,6 +106,14 @@
         "@upstash/context7-mcp@4.0.2"
       ]
     },
+    "parallel-search": {
+      "port": 8782,
+      "command": "/bin/sh",
+      "args": [
+        "-c",
+        "exec \"$HOME/.config/mcp-gateway/bin/parallel-search\""
+      ]
+    },
     "argocd-staging-eks": {
       "port": 8774,
       "command": "/bin/sh",

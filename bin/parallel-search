@@ -1,0 +1,23 @@
+#!/bin/sh
+set -eu
+
+if [ ! -r "${HOME}/.shellenv" ]; then
+  printf '%s\n' 'mcp-gateway: ~/.shellenv is required for Parallel credentials' >&2
+  exit 1
+fi
+
+# shellcheck source=/dev/null
+. "${HOME}/.shellenv"
+
+: "${PARALLEL_API_KEY:?PARALLEL_API_KEY is not set}"
+MCP_REMOTE_AUTH_TOKEN="${PARALLEL_API_KEY}"
+unset PARALLEL_API_KEY
+export MCP_REMOTE_AUTH_TOKEN
+
+# mcp-remote expands this placeholder from its child environment.
+# shellcheck disable=SC2016
+exec npx -y 'mcp-remote@0.1.38' \
+  'https://search.parallel.ai/mcp' \
+  --header 'Authorization: Bearer ${MCP_REMOTE_AUTH_TOKEN}' \
+  --transport http-only \
+  --silent

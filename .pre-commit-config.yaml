@@ -21,7 +21,7 @@ repos:
     rev: 745eface02aef23e168a8afb6b5737818efbea95  # pragma: allowlist secret
     hooks:
       - id: shellcheck
-        files: ^(run|healthcheck|bin/(argocd|grafana))$
+        files: ^(run|healthcheck|bin/(argocd|github|grafana|parallel-search))$
         types: [file]
 
   - repo: local

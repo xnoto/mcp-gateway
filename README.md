@@ -80,8 +80,11 @@ source checkout.
 "$HOME/.config/mcp-gateway/healthcheck"
 ```
 
-The Grafana and Argo CD launchers source the private `~/.shellenv` file and
-export only the credential required by that MCP server.
+The GitHub, Grafana, Argo CD, and Parallel Search launchers source the private
+`~/.shellenv` file and export only the credential required by that MCP server.
+Parallel Search uses a pinned `mcp-remote` bridge to convert its hosted
+Streamable HTTP endpoint to stdio before the supervisor publishes it on the
+standard loopback endpoint.
 
 Context-mode remains a client-local MCP because it owns per-session capture
 and compaction behavior; it is not routed through this shared gateway.
