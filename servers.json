@@ -114,6 +114,14 @@
         "exec \"$HOME/.config/mcp-gateway/bin/parallel-search\""
       ]
     },
+    "apify": {
+      "port": 8783,
+      "command": "/bin/sh",
+      "args": [
+        "-c",
+        "exec \"$HOME/.config/mcp-gateway/bin/apify\""
+      ]
+    },
     "argocd-staging-eks": {
       "port": 8774,
       "command": "/bin/sh",

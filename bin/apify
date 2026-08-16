@@ -1,0 +1,23 @@
+#!/bin/sh
+set -eu
+
+if [ ! -r "${HOME}/.shellenv" ]; then
+  printf '%s\n' 'mcp-gateway: ~/.shellenv is required for Apify credentials' >&2
+  exit 1
+fi
+
+# shellcheck source=/dev/null
+. "${HOME}/.shellenv"
+
+: "${APIFY_TOKEN:?APIFY_TOKEN is not set}"
+MCP_REMOTE_AUTH_TOKEN="${APIFY_TOKEN}"
+unset APIFY_TOKEN
+export MCP_REMOTE_AUTH_TOKEN
+
+# mcp-remote expands this placeholder from its child environment.
+# shellcheck disable=SC2016
+exec npx -y 'mcp-remote@0.1.38' \
+  'https://mcp.apify.com/?tools=actors,apify/facebook-marketplace-scraper,apify/google-maps-scraper&telemetry-enabled=false' \
+  --header 'Authorization: Bearer ${MCP_REMOTE_AUTH_TOKEN}' \
+  --transport http-only \
+  --silent
