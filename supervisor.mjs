@@ -1,5 +1,5 @@
 import { spawn } from "node:child_process"
-import { readFileSync } from "node:fs"
+import { readFileSync, mkdirSync } from "node:fs"
 import { homedir } from "node:os"
 import { join } from "node:path"
 import { probeMcp } from "./probe.mjs"
@@ -82,11 +82,18 @@ function scheduleRestart(name) {
   restartTimers.set(name, timer)
 }
 
+function uvCacheDir(name) {
+  const dir = join(homedir(), ".cache", "mcp-gateway", "uv", name)
+  mkdirSync(dir, { recursive: true })
+  return dir
+}
+
 function start(name) {
   const server = servers[name]
   const environment = {
     ...baseEnvironment(),
     ...(server.env ?? {}),
+    UV_CACHE_DIR: uvCacheDir(name),
   }
   const args = [
     "--from",

@@ -1,0 +1,53 @@
+#!/bin/sh
+set -eu
+
+# Pre-warm isolated uv caches so the supervisor starts without lock contention.
+# Each server gets its own UV_CACHE_DIR under ~/.cache/mcp-gateway/uv/<name>.
+
+CACHE_ROOT="${HOME}/.cache/mcp-gateway/uv"
+MCP_PROXY_SPEC="mcp-proxy==0.12.0"
+MCP_SDK_SPEC="mcp==1.27.1"
+CONFIG="${1:-${HOME}/.config/mcp-gateway/servers.json}"
+
+warm_mcp_proxy() {
+  name="$1"
+  cache_dir="${CACHE_ROOT}/${name}"
+  mkdir -p "${cache_dir}"
+  printf '%s\n' "warming ${name}: mcp-proxy"
+  UV_CACHE_DIR="${cache_dir}" uvx --from "${MCP_PROXY_SPEC}" --with "${MCP_SDK_SPEC}" mcp-proxy --help >/dev/null 2>&1
+}
+
+# Every server needs mcp-proxy cached.
+# Servers whose downstream command is also uvx need that cached too.
+names=$(node -e "
+  const c = require('${CONFIG}');
+  console.log(Object.keys(c.mcpServers).join(' '));
+")
+
+for name in ${names}; do
+  warm_mcp_proxy "${name}" &
+done
+wait
+printf '%s\n' "mcp-proxy warm for all servers"
+
+# Downstream uvx packages (command=uvx in servers.json)
+downstream=$(node -e "
+  const c = require('${CONFIG}');
+  for (const [n, s] of Object.entries(c.mcpServers)) {
+    if (s.command === 'uvx') console.log(n + ' ' + (s.args || [])[0]);
+  }
+")
+
+# Downstream uvx packages from bin scripts
+downstream="${downstream}
+grafana mcp-grafana@1.1.0"
+
+printf '%s\n' "${downstream}" | while IFS=' ' read -r name pkg; do
+  [ -z "${name}" ] && continue
+  cache_dir="${CACHE_ROOT}/${name}"
+  printf '%s\n' "warming ${name}: ${pkg}"
+  UV_CACHE_DIR="${cache_dir}" uvx "${pkg}" --help >/dev/null 2>&1 || true &
+done
+wait
+
+printf '%s\n' "mcp-gateway caches warm"
