@@ -34,14 +34,6 @@
         "exec \"$HOME/.config/mcp-gateway/bin/grafana\""
       ]
     },
-    "agent-hub": {
-      "port": 8776,
-      "command": "npx",
-      "args": [
-        "-y",
-        "agent-hub-mcp@0.4.0"
-      ]
-    },
     "tmux": {
       "port": 8770,
       "command": "npx",
