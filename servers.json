@@ -42,14 +42,6 @@
         "tmux-mcp@0.2.2"
       ]
     },
-    "opencode-docs": {
-      "port": 8773,
-      "command": "npx",
-      "args": [
-        "-y",
-        "opencode-docs-mcp@1.0.0"
-      ]
-    },
     "argocd-staging-eks": {
       "port": 8774,
       "command": "/bin/sh",
