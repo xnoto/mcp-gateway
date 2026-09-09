@@ -15,10 +15,12 @@ protocol failures.
 
 The `codebase-memory` server is confined to repositories below `~/git`. It
 indexes each repository only when a client requests it and keeps derived graph
-state in Codebase Memory's local cache; it does not clone repositories. Clients
-must keep optional shared graph-artifact persistence disabled so indexing does
-not write graph artifacts into source trees. Its graph UI is disabled because
-the gateway exposes MCP only.
+state in a gateway-specific local cache below `~/.cache/mcp-gateway`; it does
+not clone repositories. The full upstream tool surface is required for explicit
+indexing, so clients must obtain confirmation before an indexing or other
+non-read operation. Clients must keep optional shared graph-artifact persistence
+disabled so indexing does not write graph artifacts into source trees. Its graph
+UI is disabled because the gateway exposes MCP only.
 
 ## Dependencies
 
