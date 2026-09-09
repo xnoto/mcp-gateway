@@ -13,6 +13,15 @@ Each proxy listens only on a dedicated localhost port recorded in
 supervisor probes `tools/list` and restarts only the failed proxy after repeated
 protocol failures.
 
+The `codebase-memory` server is confined to repositories below `~/git`. It
+indexes each repository only when a client requests it and keeps derived graph
+state in a gateway-specific local cache below `~/.cache/mcp-gateway`; it does
+not clone repositories. The full upstream tool surface is required for explicit
+indexing, so clients must obtain confirmation before an indexing or other
+non-read operation. Clients must keep optional shared graph-artifact persistence
+disabled so indexing does not write graph artifacts into source trees. Its graph
+UI is disabled because the gateway exposes MCP only.
+
 ## Dependencies
 
 On macOS, the managed Brewfile provides `node`, `uv`, `podman`, and `tmux`.
@@ -85,6 +94,11 @@ The GitHub, Grafana, Argo CD, and Parallel Search launchers source the private
 Parallel Search uses a pinned `mcp-remote` bridge to convert its hosted
 Streamable HTTP endpoint to stdio before the supervisor publishes it on the
 standard loopback endpoint.
+
+Codebase Memory has no credentials or OAuth flow. After the gateway is healthy,
+connect a client to `http://127.0.0.1:8771/mcp` and index individual repositories
+below `~/git` with shared graph-artifact persistence disabled; do not index the
+parent directory as one project.
 
 Context-mode remains a client-local MCP because it owns per-session capture
 and compaction behavior; it is not routed through this shared gateway.
