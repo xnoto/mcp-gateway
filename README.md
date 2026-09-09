@@ -39,6 +39,21 @@ Platform integration remains owned by the `dotfiles` repo:
 
 After applying the dotfiles, load the service for the current platform.
 
+### Restarting an installed service
+
+From the gateway checkout, use:
+
+```sh
+make restart
+```
+
+The target selects the registered macOS LaunchAgent or Linux systemd user unit
+from `uname`. It only restarts an existing service; it does not bootstrap a
+LaunchAgent, enable a unit, or run `systemctl --user daemon-reload`. After a
+platform service-definition change, apply the dotfiles and use the platform
+steps below before restarting. Restarting a service changes live workstation
+state and requires explicit confirmation.
+
 ### macOS
 
 ```sh
