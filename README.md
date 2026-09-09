@@ -15,8 +15,9 @@ protocol failures.
 
 The `codebase-memory` server is confined to repositories below `~/git`. It
 indexes each repository only when a client requests it and keeps derived graph
-state in Codebase Memory's local cache; it does not clone repositories or write
-shared graph artifacts into their source trees. Its graph UI is disabled because
+state in Codebase Memory's local cache; it does not clone repositories. Clients
+must keep optional shared graph-artifact persistence disabled so indexing does
+not write graph artifacts into source trees. Its graph UI is disabled because
 the gateway exposes MCP only.
 
 ## Dependencies
@@ -94,10 +95,14 @@ standard loopback endpoint.
 
 Codebase Memory has no credentials or OAuth flow. After the gateway is healthy,
 connect a client to `http://127.0.0.1:8771/mcp` and index individual repositories
-below `~/git`; do not index the parent directory as one project.
+below `~/git` with shared graph-artifact persistence disabled; do not index the
+parent directory as one project.
 
 Context-mode remains a client-local MCP because it owns per-session capture
 and compaction behavior; it is not routed through this shared gateway.
 
 The endpoints are unauthenticated and intentionally bound to loopback. Do not
 forward or expose these ports to other hosts.
+
+On macOS, initialize and start the Podman machine before using the
+`terraform-docs` endpoint.
