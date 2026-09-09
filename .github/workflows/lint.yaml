@@ -33,3 +33,6 @@ jobs:
 
       - name: Run pre-commit hooks
         run: pre-commit run --all-files
+
+      - name: Test restart dispatch
+        run: make test-restart
