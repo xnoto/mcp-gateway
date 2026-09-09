@@ -57,8 +57,10 @@ async function runRestart(platform, serviceExit = 0) {
     let invocation = null;
     try {
       invocation = (await readFile(call, "utf8")).trim().split("\n");
-    } catch {
-      // An unsupported platform must not invoke a service manager.
+    } catch (error) {
+      if (error.code !== "ENOENT") {
+        throw error;
+      }
     }
     return { ...result, invocation };
   } finally {
