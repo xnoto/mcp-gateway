@@ -50,4 +50,11 @@ printf '%s\n' "${downstream}" | while IFS=' ' read -r name pkg; do
 done
 wait
 
+# Codebase Memory uses npx through a shell command so CBM_ALLOWED_ROOT can
+# resolve the gateway user's home directory; it is not discoverable above.
+if node -e "process.exit(require('${CONFIG}').mcpServers['codebase-memory'] ? 0 : 1)"; then
+  printf '%s\n' "warming codebase-memory: codebase-memory-mcp@0.10.8"
+  npx --yes codebase-memory-mcp@0.10.8 --help >/dev/null 2>&1 || true
+fi
+
 printf '%s\n' "mcp-gateway caches warm"
