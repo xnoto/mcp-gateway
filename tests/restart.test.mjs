@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import { execFile } from "node:child_process";
-import { chmod, mkdtemp, readFile, rm, writeFile } from "node:fs/promises";
+import { chmod, mkdir, mkdtemp, readFile, rm, writeFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
@@ -21,7 +21,7 @@ async function runRestart(platform, serviceExit = 0) {
   const directory = await mkdtemp(join(tmpdir(), "mcp-gateway-restart-"));
   const bin = join(directory, "bin");
   const call = join(directory, "call");
-  await writeFile(join(directory, ".keep"), "", "utf8");
+  await mkdir(bin);
   await writeExecutable(join(bin, "uname"), "#!/bin/sh\nprintf '%s\\n' \"$MCP_GATEWAY_TEST_PLATFORM\"\n");
   await writeExecutable(join(bin, "id"), "#!/bin/sh\nprintf '501\\n'\n");
   for (const command of ["launchctl", "systemctl"]) {
