@@ -16,7 +16,8 @@ if (
   throw new Error("mcpServers must be a non-empty object")
 }
 const servers = config.mcpServers
-const restartDelayMs = 5_000
+const minRestartDelayMs = delayFromEnv("MCP_GATEWAY_MIN_RESTART_DELAY_MS", 5_000)
+const maxRestartDelayMs = delayFromEnv("MCP_GATEWAY_MAX_RESTART_DELAY_MS", 300_000)
 const startupGraceMs = 120_000
 const probeIntervalMs = 30_000
 const failedProbesBeforeRestart = 3
@@ -24,6 +25,8 @@ const children = new Map()
 const restartTimers = new Map()
 const startTimes = new Map()
 const probeFailures = new Map()
+const consecutiveFailures = new Map()
+const healthyTimers = new Map()
 const probesInFlight = new Set()
 let stopping = false
 
@@ -73,12 +76,24 @@ function validate() {
   }
 }
 
-function scheduleRestart(name) {
+function delayFromEnv(name, fallback) {
+  const value = Number(process.env[name])
+  return Number.isFinite(value) && value >= 0 ? value : fallback
+}
+
+// Consecutive quick failures back off exponentially (auth expiry and other
+// persistent faults must not fork-loop); a child that survives the startup
+// grace window resets the count so transient crashes restart immediately.
+function restartDelayMs(failures) {
+  return Math.min(minRestartDelayMs * 2 ** (failures - 1), maxRestartDelayMs)
+}
+
+function scheduleRestart(name, delayMs) {
   if (stopping || restartTimers.has(name)) return
   const timer = setTimeout(() => {
     restartTimers.delete(name)
     start(name)
-  }, restartDelayMs)
+  }, delayMs)
   restartTimers.set(name, timer)
 }
 
@@ -119,6 +134,12 @@ function start(name) {
   children.set(name, child)
   startTimes.set(name, Date.now())
   probeFailures.set(name, 0)
+  const healthyTimer = setTimeout(() => {
+    healthyTimers.delete(name)
+    consecutiveFailures.set(name, 0)
+  }, startupGraceMs)
+  healthyTimer.unref()
+  healthyTimers.set(name, healthyTimer)
 
   child.on("error", (error) => {
     console.error(`[mcp-gateway] ${name} failed to start: ${error.message}`)
@@ -128,14 +149,19 @@ function start(name) {
     children.delete(name)
     startTimes.delete(name)
     probeFailures.delete(name)
+    clearTimeout(healthyTimers.get(name))
+    healthyTimers.delete(name)
     if (stopping) {
       if (children.size === 0) process.exit(0)
       return
     }
+    const failures = (consecutiveFailures.get(name) ?? 0) + 1
+    consecutiveFailures.set(name, failures)
+    const delayMs = restartDelayMs(failures)
     console.error(
-      `[mcp-gateway] ${name} exited (${signal ?? `code ${code}`}); restarting in ${restartDelayMs / 1_000}s`,
+      `[mcp-gateway] ${name} exited (${signal ?? `code ${code}`}); restart ${failures} in ${delayMs / 1_000}s`,
     )
-    scheduleRestart(name)
+    scheduleRestart(name, delayMs)
   })
 }
 

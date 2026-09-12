@@ -1,12 +1,15 @@
-.PHONY: check test restart test-restart
+.PHONY: check test restart test-restart test-backoff
 
 check:
 	pre-commit run --all-files
 
-test: check test-restart
+test: check test-restart test-backoff
 
 test-restart:
 	node --test tests/restart.test.mjs
+
+test-backoff:
+	node --test tests/backoff.test.mjs
 
 restart:
 	@platform=$$(uname -s); \
