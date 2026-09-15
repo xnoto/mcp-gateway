@@ -33,6 +33,7 @@ async function runSupervisor({ minDelayMs, maxDelayMs, runTimeMs }) {
       ...process.env,
       PATH: `${bin}:${process.env.PATH}`,
       MCP_GATEWAY_CONFIG: config,
+      MCP_GATEWAY_STATE: join(directory, "state.json"),
       MCP_GATEWAY_MIN_RESTART_DELAY_MS: String(minDelayMs),
       MCP_GATEWAY_MAX_RESTART_DELAY_MS: String(maxDelayMs),
     },
@@ -58,19 +59,31 @@ async function runSupervisor({ minDelayMs, maxDelayMs, runTimeMs }) {
 }
 
 test("quick failures back off exponentially up to the cap", async () => {
-  const timestamps = await runSupervisor({ minDelayMs: 100, maxDelayMs: 400, runTimeMs: 1_400 });
+  const minDelayMs = 100;
+  const maxDelayMs = 400;
+  const timestamps = await runSupervisor({ minDelayMs, maxDelayMs, runTimeMs: 1_400 });
 
   // Fixed 100ms restarts would spawn ~14 times; backoff 100 -> 200 -> 400 -> 400
   // yields 4-7 spawns depending on node startup jitter.
   assert.ok(timestamps.length >= 3, `expected at least 3 spawns, got ${timestamps.length}`);
   assert.ok(timestamps.length <= 7, `expected at most 7 spawns, got ${timestamps.length}`);
 
-  const gaps = timestamps.slice(1).map((time, index) => time - timestamps[index]);
-  const milliseconds = gaps.map((gap) => gap / 1e6);
+  const gaps = timestamps.slice(1).map((time, index) => (time - timestamps[index]) / 1e6);
+  const report = gaps.map((gap) => gap.toFixed(1)).join(", ");
+
+  // Every gap carries the same spawn overhead on top of its scheduled delay,
+  // so gaps are compared against the delay they were scheduled for and growth
+  // is measured as a difference rather than a ratio; a ratio reads the shared
+  // overhead as shrinkage and flakes at these deliberately short delays.
+  gaps.forEach((gap, index) => {
+    const scheduled = Math.min(minDelayMs * 2 ** index, maxDelayMs);
+    assert.ok(gap >= scheduled * 0.9, `gap ${index} should be >= ${scheduled}ms: ${report}`);
+  });
+
   assert.ok(
-    milliseconds[1] > milliseconds[0] * 1.5,
-    `second gap should grow: ${milliseconds.join(", ")}`,
+    gaps[1] - gaps[0] >= minDelayMs * 0.5,
+    `second gap should grow by about ${minDelayMs}ms: ${report}`,
   );
-  const lastGap = milliseconds[milliseconds.length - 1];
-  assert.ok(lastGap >= 350, `cap gap should be >= 350ms, got ${lastGap}ms`);
+  const lastGap = gaps[gaps.length - 1];
+  assert.ok(lastGap >= maxDelayMs * 0.9, `cap gap should be >= ${maxDelayMs}ms: ${report}`);
 }, 15_000);
