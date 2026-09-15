@@ -13,6 +13,31 @@ Each proxy listens only on a dedicated localhost port recorded in
 supervisor probes `tools/list` and restarts only the failed proxy after repeated
 protocol failures.
 
+## Process lifecycle
+
+Each proxy is started in its own process group, and every stop signals that
+whole group. A server's `uvx` or `npx` entry point is only the head of a tree:
+`npx` starts `npm exec`, which starts the server itself. A signal aimed at the
+proxy alone leaves those wrappers running, and a leaked wrapper keeps whatever
+the downstream server holds. A server built around a singleton daemon, such as
+`codebase-memory`, then refuses every later generation: the leaked client still
+holds the daemon's admission locks, each replacement waits out its handshake
+timeout and exits, and `mcp-proxy` never binds its port, so clients see a
+connection refused on a port the supervisor believes it is serving.
+
+A stop escalates to `SIGKILL` after `MCP_GATEWAY_TERMINATE_GRACE_MS`
+(10s by default), and a proxy that exits on its own is swept the same way,
+because it can die while the wrappers it started keep running.
+
+The supervisor records its process group ids in
+`~/.cache/mcp-gateway/supervisor-state.json` and sweeps any that survive into
+the next run, covering the case where the supervisor itself was killed outright
+rather than asked to stop. Group ids cannot outlive a reboot, so the file
+records the boot it was written under and is discarded when that no longer
+matches; a recycled group id is never signalled. Run a second supervisor only
+with `MCP_GATEWAY_STATE` pointed elsewhere, or it will sweep the first one's
+children.
+
 The `codebase-memory` server is confined to repositories below `~/git`. It
 indexes each repository only when a client requests it and keeps derived graph
 state in a gateway-specific local cache below `~/.cache/mcp-gateway`; it does
@@ -93,6 +118,16 @@ Run the static checks from this checkout:
 ```sh
 make check
 ```
+
+Run the static checks and the supervisor tests together:
+
+```sh
+make test
+```
+
+The supervisor tests spawn real process trees. Each one points
+`MCP_GATEWAY_STATE` at a temporary file so the suite never sweeps the process
+groups of an installed gateway.
 
 The `run` and `healthcheck` wrappers intentionally resolve the installed files
 under `~/.config/mcp-gateway`; use the static checks when working only in this
