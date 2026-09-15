@@ -36,3 +36,6 @@ jobs:
 
       - name: Test restart dispatch
         run: make test-restart
+
+      - name: Test process group cleanup
+        run: make test-orphan
