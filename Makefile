@@ -1,9 +1,9 @@
-.PHONY: check test restart test-restart test-backoff
+.PHONY: check test restart test-restart test-backoff test-orphan
 
 check:
 	pre-commit run --all-files
 
-test: check test-restart test-backoff
+test: check test-restart test-backoff test-orphan
 
 test-restart:
 	node --test tests/restart.test.mjs
@@ -18,3 +18,6 @@ restart:
 	  Linux) systemctl --user restart mcp-gateway.service ;; \
 	  *) printf '%s\n' "unsupported platform: $$platform" >&2; exit 1 ;; \
 	esac
+
+test-orphan:
+	node --test tests/orphan.test.mjs
