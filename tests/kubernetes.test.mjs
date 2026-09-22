@@ -57,10 +57,10 @@ printf '%s\\n' "$config" > ${JSON.stringify(join(calls, "derived"))}
       readFile(join(calls, "derived"), "utf8"),
     ]);
     assert.equal(source.trim(), join(directory, "source.kubeconfig"));
-    assert.match(kubectl, /config view --minify --context staging-eks\.angler-elver\.ts\.net/);
+    assert.match(kubectl, /config\nview\n--minify\n--context\nstaging-eks\.angler-elver\.ts\.net/);
     assert.doesNotMatch(kubectl, /--raw|--flatten/);
     assert.match(npx, /kubernetes-mcp-server@0\.0\.66/);
-    assert.match(npx, /--cluster-provider kubeconfig --disable-multi-cluster/);
+    assert.match(npx, /--cluster-provider\nkubeconfig\n--disable-multi-cluster/);
     assert.match(derived, new RegExp(`^${runtime}/mcp-gateway/kubernetes\\.`));
     assert.deepEqual(await readdir(join(runtime, "mcp-gateway")), []);
   } finally {
