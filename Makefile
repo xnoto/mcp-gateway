@@ -1,15 +1,21 @@
-.PHONY: check test restart test-restart test-backoff test-orphan
+.PHONY: check test restart test-restart test-backoff test-orphan test-kubernetes
 
 check:
 	pre-commit run --all-files
 
-test: check test-restart test-backoff test-orphan
+test: check test-restart test-backoff test-orphan test-kubernetes
 
 test-restart:
 	node --test tests/restart.test.mjs
 
 test-backoff:
 	node --test tests/backoff.test.mjs
+
+test-orphan:
+	node --test tests/orphan.test.mjs
+
+test-kubernetes:
+	node --test tests/kubernetes.test.mjs
 
 restart:
 	@platform=$$(uname -s); \
@@ -18,6 +24,3 @@ restart:
 	  Linux) systemctl --user restart mcp-gateway.service ;; \
 	  *) printf '%s\n' "unsupported platform: $$platform" >&2; exit 1 ;; \
 	esac
-
-test-orphan:
-	node --test tests/orphan.test.mjs

@@ -50,6 +50,22 @@
         "exec env CBM_ALLOWED_ROOT=\"$HOME/git\" CBM_CACHE_DIR=\"$HOME/.cache/mcp-gateway/codebase-memory\" npx --yes codebase-memory-mcp@0.10.8 --ui=false"
       ]
     },
+    "kubernetes-staging-eks": {
+      "port": 8772,
+      "command": "/bin/sh",
+      "args": [
+        "-c",
+        "exec \"$HOME/.config/mcp-gateway/bin/kubernetes\" staging-eks.angler-elver.ts.net"
+      ]
+    },
+    "kubernetes-prod-eks": {
+      "port": 8773,
+      "command": "/bin/sh",
+      "args": [
+        "-c",
+        "exec \"$HOME/.config/mcp-gateway/bin/kubernetes\" prod-eks.angler-elver.ts.net"
+      ]
+    },
     "argocd-staging-eks": {
       "port": 8774,
       "command": "/bin/sh",
