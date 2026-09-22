@@ -1,0 +1,33 @@
+#!/bin/sh
+set -eu
+
+if [ "$#" -ne 1 ]; then
+  printf '%s\n' 'usage: kubernetes <context>' >&2
+  exit 64
+fi
+
+context="$1"
+source_config="${KUBECONFIG:-${HOME}/.kube/config}"
+runtime_root="${XDG_RUNTIME_DIR:-${TMPDIR:-/tmp}}/mcp-gateway"
+
+# Do not use kubectl's --raw or --flatten options: an EKS exec credential is
+# resolved by the host's normal AWS authentication flow, not copied here.
+umask 077
+mkdir -p "${runtime_root}"
+derived_config=$(mktemp "${runtime_root}/kubernetes.XXXXXX")
+cleanup() {
+  rm -f "${derived_config}"
+}
+trap cleanup EXIT HUP INT TERM
+
+KUBECONFIG="${source_config}" kubectl config view \
+  --minify \
+  --context "${context}" \
+  > "${derived_config}"
+
+# The derived file exposes exactly one selected context. Disabling multi-cluster
+# support prevents MCP clients from choosing a different context per tool call.
+npx --yes kubernetes-mcp-server@0.0.66 \
+  --kubeconfig "${derived_config}" \
+  --cluster-provider kubeconfig \
+  --disable-multi-cluster

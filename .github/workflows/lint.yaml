@@ -39,3 +39,6 @@ jobs:
 
       - name: Test process group cleanup
         run: make test-orphan
+
+      - name: Test fixed-context Kubernetes wrapper
+        run: make test-kubernetes

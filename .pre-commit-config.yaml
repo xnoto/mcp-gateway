@@ -12,7 +12,7 @@ repos:
 
   - repo: https://github.com/Yelp/detect-secrets
     # frozen: v1.5.0
-    rev: 68e8b45440415753fff70a312ece8da92ba85b4a  # pragma: allowlist secret
+    rev: 68e8b45440415753fff70a312ece8da92ba85b4  # pragma: allowlist secret
     hooks:
       - id: detect-secrets
 
@@ -21,7 +21,7 @@ repos:
     rev: a6564f5d57444e123433a5c9af733e3975c77229  # pragma: allowlist secret
     hooks:
       - id: shellcheck
-        files: ^(run|warm|healthcheck|bin/(argocd|github|grafana|parallel-search))$
+        files: ^(run|warm|healthcheck|bin/(argocd|github|grafana|kubernetes|parallel-search))$
         types: [file]
 
   - repo: local
