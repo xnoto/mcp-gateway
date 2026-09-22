@@ -40,7 +40,7 @@ printf '%s\\n' "$config" > ${JSON.stringify(join(calls, "derived"))}
   await mkdir(calls);
 
   try {
-    await execFile("sh", [join(repository, "bin", "kubernetes"), "staging-eks.angler-elver.ts.net"], {
+    await execFile(join(repository, "bin", "kubernetes"), ["staging-eks.angler-elver.ts.net"], {
       env: {
         ...process.env,
         PATH: `${bin}:${process.env.PATH}`,
