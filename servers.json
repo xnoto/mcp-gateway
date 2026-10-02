@@ -26,6 +26,14 @@
         "AWS_REGION=us-east-2"
       ]
     },
+    "github": {
+      "port": 8767,
+      "command": "/bin/sh",
+      "args": [
+        "-c",
+        "exec \"$HOME/.config/mcp-gateway/bin/github\""
+      ]
+    },
     "grafana": {
       "port": 8768,
       "command": "/bin/sh",

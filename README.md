@@ -13,6 +13,43 @@ Each proxy listens only on a dedicated localhost port recorded in
 supervisor probes `tools/list` and restarts only the failed proxy after repeated
 protocol failures.
 
+## Shared GitHub integration
+
+The `github` entry serves `http://127.0.0.1:8767/mcp` through the existing
+`bin/github` launcher. It sources the private `~/.shellenv` and passes
+`GITHUB_MCP_TOKEN` to the official GitHub MCP container as
+`GITHUB_PERSONAL_ACCESS_TOKEN`. The image remains pinned to `v1.9.0`;
+this integration does not upgrade the server or change token permissions.
+
+OpenCode, Claude Code, and Codex connect to that endpoint using independent
+HTTP sessions; they do not launch their own GitHub process or carry token
+headers. OpenCode's global entry is disabled by default; projects opt in with
+`"github": { "enabled": true }`. All clients share the gateway's GitHub
+identity, repository access, API limits, and backend availability. They can
+still conflict when modifying the same GitHub resource; shared transport is
+not a coordination or per-client authorization boundary.
+
+The endpoint is unauthenticated. Loopback limits network exposure but does not
+authenticate other local processes. Use it only on a trusted workstation and
+never forward it to another host. Keep `GITHUB_MCP_TOKEN` unexported in
+shellenv and keep `GITHUB_TOKEN` reserved for the `gh` CLI.
+
+Install the gateway source before activating the client connections. Dotfiles
+owns the external checkouts, the Claude archive mapping, encrypted credential
+rendering, and platform service definitions. After an owner-approved source
+update, sync the installed gateway, restart its service with explicit approval,
+and reload the clients. Podman must be available (and its machine running on
+macOS); the first GitHub launch may pull the pinned image. No container pull
+or workstation activation is performed by CI.
+
+`make test-github` validates the manifest, credential scoping with a synthetic
+shellenv and mocked Podman, and independent concurrent HTTP sessions over one
+synthetic stdio backend using the pinned proxy/SDK. It does not contact GitHub
+or prove token validity, permissions, image compatibility, or live client
+behavior. Authenticated read-only checks from the installed clients remain a
+separate owner-run verification stage. The proxy does not route elicitation or
+sampling callbacks; do not assume callback-dependent tools work through it.
+
 ## Process lifecycle
 
 Each proxy is started in its own process group, and every stop signals that
@@ -124,6 +161,11 @@ Run the static checks and the supervisor tests together:
 ```sh
 make test
 ```
+
+The GitHub transport test additionally needs `mcp-proxy==0.12.0` and
+`mcp==1.27.1` available to its Python interpreter; CI installs the same
+versions selected by the supervisor. It uses a temporary HOME and an ephemeral
+loopback port, never the installed gateway or production credentials.
 
 The supervisor tests spawn real process trees. Each one points
 `MCP_GATEWAY_STATE` at a temporary file so the suite never sweeps the process
