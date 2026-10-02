@@ -58,7 +58,7 @@ test("GitHub launcher scopes the fixture credential and fails closed when missin
 printf '%s\\n' invoked > "$RECORD_FILE"
 [ "$#" -eq 6 ] || exit 21
 [ "$1" = run ] && [ "$2" = --rm ] && [ "$3" = -i ] || exit 22
-[ "$4" = --env ] && [ "$5" = GITHUB_PERSONAL_ACCESS_TOKEN ] || exit 23
+[ "$4" = --env ] && [ "$5" = GITHUB_PERSONAL_ACCESS_TOKEN ] || exit 23 # pragma: allowlist secret -- public environment name from bin/github
 [ "$6" = ghcr.io/github/github-mcp-server:v1.9.0 ] || exit 24
 [ "\${GITHUB_PERSONAL_ACCESS_TOKEN-}" = non-production-fixture ] || exit 25
 [ "\${GITHUB_MCP_TOKEN+x}" != x ] || exit 26
