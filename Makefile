@@ -1,9 +1,9 @@
-.PHONY: check test restart test-restart test-backoff test-orphan test-kubernetes
+.PHONY: check test restart test-restart test-backoff test-orphan test-kubernetes test-github
 
 check:
 	pre-commit run --all-files
 
-test: check test-restart test-backoff test-orphan test-kubernetes
+test: check test-restart test-backoff test-orphan test-kubernetes test-github
 
 test-restart:
 	node --test tests/restart.test.mjs
@@ -16,6 +16,9 @@ test-orphan:
 
 test-kubernetes:
 	node --test tests/kubernetes.test.mjs
+
+test-github:
+	node --test tests/github.test.mjs
 
 restart:
 	@platform=$$(uname -s); \

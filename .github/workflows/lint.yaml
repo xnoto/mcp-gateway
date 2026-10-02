@@ -29,7 +29,7 @@ jobs:
           python-version: "3.12.10"
 
       - name: Install pinned validation tools
-        run: python3 -m pip install "pre-commit==${PRE_COMMIT_VERSION}"
+        run: python3 -m pip install "pre-commit==${PRE_COMMIT_VERSION}" "mcp-proxy==0.12.0" "mcp==1.27.1"
 
       - name: Run pre-commit hooks
         run: pre-commit run --all-files
@@ -42,3 +42,6 @@ jobs:
 
       - name: Test fixed-context Kubernetes wrapper
         run: make test-kubernetes
+
+      - name: Test shared GitHub launcher and HTTP sessions
+        run: make test-github
