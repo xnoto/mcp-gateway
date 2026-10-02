@@ -19,6 +19,12 @@ Keep platform service definitions and secret rendering in `dotfiles`:
   and MCP protocol checks.
 - `run`, `healthcheck`, `bin/argocd`, `bin/github`, `bin/grafana`, and
   `bin/parallel-search` must remain executable.
+- When adding or editing a `bin/` launcher, verify its staged Git file mode is
+  `100755` (`git ls-files -s bin/<name>` after staging). A `100644` launcher
+  fails when the manifest invokes it with `exec`, even if tests calling
+  `/bin/sh bin/<name>` pass.
+- Run `make test-github` for GitHub launcher changes; its manifest test checks
+  executable permissions in addition to the wrapper's behavior.
 - The shell wrappers are POSIX `sh` and must remain portable across macOS and
   Linux.
 

@@ -50,6 +50,12 @@ behavior. Authenticated read-only checks from the installed clients remain a
 separate owner-run verification stage. The proxy does not route elicitation or
 sampling callbacks; do not assume callback-dependent tools work through it.
 
+The launcher must be executable in Git (`git ls-files -s bin/github` should
+show `100755` after staging). Otherwise the gateway's `exec` fails with
+permission denied before credentials or Podman are reached. The manifest test
+checks this mode; running the launcher as `/bin/sh bin/github` alone does not
+catch the failure.
+
 ## Process lifecycle
 
 Each proxy is started in its own process group, and every stop signals that
@@ -163,7 +169,7 @@ make test
 ```
 
 The GitHub transport test additionally needs `mcp-proxy==0.12.0` and
-`mcp==1.27.1` available to its Python interpreter; CI installs the same
+`mcp==1.30.0` available to its Python interpreter; CI installs the same
 versions selected by the supervisor. It uses a temporary HOME and an ephemeral
 loopback port, never the installed gateway or production credentials.
 

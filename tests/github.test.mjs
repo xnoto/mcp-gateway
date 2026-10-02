@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import { execFile as execFileCallback, spawn } from "node:child_process";
-import { chmod, mkdtemp, mkdir, readFile, rm, writeFile } from "node:fs/promises";
+import { chmod, mkdtemp, mkdir, readFile, rm, stat, writeFile } from "node:fs/promises";
 import { createServer } from "node:net";
 import { tmpdir } from "node:os";
 import { dirname, join } from "node:path";
@@ -33,6 +33,8 @@ function signalGroup(child, signal) {
 }
 
 test("GitHub manifest uses the existing launcher on a unique loopback port", async () => {
+  const launcher = join(repository, "bin", "github");
+  assert.equal((await stat(launcher)).mode & 0o111, 0o111, "GitHub launcher must be executable");
   const { mcpServers } = JSON.parse(await readFile(join(repository, "servers.json"), "utf8"));
   assert.deepEqual(mcpServers.github, {
     port: 8767,
