@@ -236,7 +236,7 @@ function start(name) {
     "--from",
     "mcp-proxy==0.12.0",
     "--with",
-    "mcp==1.27.1",
+    "mcp==1.30.0",
     "mcp-proxy",
     "--host",
     "127.0.0.1",

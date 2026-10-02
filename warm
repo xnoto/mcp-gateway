@@ -6,7 +6,7 @@ set -eu
 
 CACHE_ROOT="${HOME}/.cache/mcp-gateway/uv"
 MCP_PROXY_SPEC="mcp-proxy==0.12.0"
-MCP_SDK_SPEC="mcp==1.27.1"
+MCP_SDK_SPEC="mcp==1.30.0"
 CONFIG="${1:-${HOME}/.config/mcp-gateway/servers.json}"
 
 warm_mcp_proxy() {
