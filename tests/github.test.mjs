@@ -58,12 +58,13 @@ test("GitHub launcher scopes the fixture credential and fails closed when missin
   await writeFile(join(directory, ".shellenv"), "GITHUB_MCP_TOKEN=non-production-fixture\n"); // pragma: allowlist secret -- synthetic non-production fixture, not a GitHub token
   await writeFile(join(bin, "podman"), `#!/bin/sh
 printf '%s\\n' invoked > "$RECORD_FILE"
-[ "$#" -eq 8 ] || exit 21
+[ "$#" -eq 9 ] || exit 21
 [ "$1" = run ] && [ "$2" = --rm ] && [ "$3" = -i ] || exit 22
 [ "$4" = --env ] && [ "$5" = GITHUB_PERSONAL_ACCESS_TOKEN ] || exit 23
 [ "$6" = ghcr.io/github/github-mcp-server:v1.9.0 ] || exit 24
-[ "$7" = --toolsets=context,issues,pull_requests,repos,users ] || exit 28
-[ "$8" = --tools=actions_list,actions_get ] || exit 29
+[ "$7" = stdio ] || exit 28
+[ "$8" = --toolsets=context,issues,pull_requests,repos,users ] || exit 29
+[ "$9" = --tools=actions_list,actions_get ] || exit 30
 [ "\${GITHUB_PERSONAL_ACCESS_TOKEN-}" = non-production-fixture ] || exit 25
 [ "\${GITHUB_MCP_TOKEN+x}" != x ] || exit 26
 [ "\${GITHUB_TOKEN+x}" != x ] || exit 27
@@ -84,6 +85,7 @@ printf '%s\\n' "$@"
   assert.deepEqual(stdout.trim().split("\n"), [
     "run", "--rm", "-i", "--env", "GITHUB_PERSONAL_ACCESS_TOKEN",
     "ghcr.io/github/github-mcp-server:v1.9.0",
+    "stdio",
     "--toolsets=context,issues,pull_requests,repos,users",
     "--tools=actions_list,actions_get",
   ]);
